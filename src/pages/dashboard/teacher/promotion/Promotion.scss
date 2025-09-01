@@ -1,0 +1,86 @@
+// BatchPromotion.scss
+.batch-promotion {
+  &-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  &-benefits {
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  &-filter {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+    
+    button {
+      margin-left: 0.5rem;
+      text-transform: none;
+      font-weight: 500;
+    }
+  }
+
+  .batch-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    &-progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    &-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+  }
+
+  .promoted-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    font-weight: 600;
+  }
+
+  .rank-chip {
+    font-weight: 600;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .batch-promotion {
+    &-filter {
+      flex-direction: column;
+      gap: 0.5rem;
+      
+      button {
+        margin-left: 0;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}
