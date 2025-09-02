@@ -41,7 +41,7 @@ const settings = [
 
 function Header() {
   const theme = useTheme();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, login } = useAuth();
   const { name, email, profileImage, userType } = useProfileData();
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,7 +53,7 @@ function Header() {
   const [loginType, setLoginType] = React.useState<"STU" | "TEA" | null>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);   
+    setAnchorElNav(event.currentTarget);
   };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -69,18 +69,17 @@ function Header() {
 
   const handleCloseUserMenu = (name: string) => {
     setAnchorElUser(null);
-    if (name == "Dashboard") {
-      if (loginType == "STU" || userType == "Student") {
-        navigate("/dashboard/stu/home")
-      }
-      else{
-        navigate("/dashboard/tea/home")
+    if (name === "Dashboard") {
+      // Use the actual userType from context
+      if (userType === "Teacher") {
+        navigate("/dashboard/tea/home");
+      } else if (userType === "Student") {
+        navigate("/dashboard/stu/home");
       }
     }
-    if(name == "Logout") {
+    if (name === "Logout") {
       logout();
     }
-    
   };
 
   const handleOpenLoginMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -107,15 +106,17 @@ function Header() {
   const handleVerifyOtp = async (email: string, otp: string) => {
     const response = await HomeApiService.verifyOtpService(email, otp);
     if (response.status === 200) {
-      localStorage.setItem("auth_token", response.access_token);
-      localStorage.setItem("refresh_token", response.refresh_token);
-      window.dispatchEvent(new Event('localStorageAccesChange'));
-      navigate("/dashboard/tea/home");
+      login(response.access_token, response.refresh_token);
     }
   };
 
   React.useEffect(() => {
-  }, [isAuthenticated])
+    if (userType === "Teacher"  && isAuthenticated) {
+      navigate("/dashboard/tea/home");
+    } else if (userType === "Student" && isAuthenticated) {
+      navigate("/dashboard/stu/home");
+    }
+  }, [isAuthenticated, userType])
 
   return (
     <>
@@ -288,7 +289,7 @@ function Header() {
                   >
                     <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                       <Typography variant="subtitle1" fontWeight="600">
-                        {name  || "Welcome"}
+                        {name || "Welcome"}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {email || "Member"}
@@ -299,7 +300,7 @@ function Header() {
                       (
                         <MenuItem
                           key={setting.name}
-                          onClick={() =>handleCloseUserMenu(setting.name)}
+                          onClick={() => handleCloseUserMenu(setting.name)}
                           sx={{ py: 1.5 }}
                         >
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>

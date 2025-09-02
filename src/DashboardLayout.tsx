@@ -16,7 +16,8 @@ import {
   alpha,
   Avatar,
   Divider,
-  Chip
+  Chip,
+  CircularProgress // Add CircularProgress
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -32,22 +33,53 @@ const drawerWidth = 280;
 const collapsedWidth = 80;
 
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { userType, name, profileImage } = useProfileData();
+  const { userType, name, profileImage, isLoading } = useProfileData(); // Add isLoading
   const [open, setOpen] = useState(true);
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
 
+  // Use useMemo for menu items
+  const menuItems = React.useMemo(() => {
+    console.log("Calculating menu items for userType:", userType);
+    return userType === "Teacher" ? TeacherMenu : StudentMenu;
+  }, [userType]);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  let menuItems = userType === "Teacher" ? TeacherMenu : StudentMenu;
 
-  useEffect(() => {
-    menuItems = userType === "Teacher" ? TeacherMenu : StudentMenu;
-  }, [userType])
+  // Show loading state while profile data is being fetched
+  if (isLoading || !userType) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        flexDirection: 'column',
+        gap: 2
+      }}>
+        <CircularProgress
+          size={60}
+          sx={{
+            color: theme.palette.primary.main,
+            mb: 2
+          }}
+        />
+        <Typography variant="h6" color="textSecondary">
+          Loading your dashboard...
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          Please wait while we load your information
+        </Typography>
+      </Box>
+    );
+  }
+
+
 
   return (
     <Box sx={{ display: "flex" }}>

@@ -56,9 +56,11 @@ const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  const handleVerifyOtpCall = () => {
+  const handleVerifyOtpCall = async () => {
     if (otp) {
-      handleVerifyOtp(email, otp);
+      setIsLoading(true);
+      await handleVerifyOtp(email, otp);
+      setIsLoading(false);
     }
   };
 
