@@ -53,11 +53,11 @@ export default function Footer() {
           opacity: 0.3
         }}
       />
-      
+
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
         <Grid container spacing={6} sx={{ py: 8 }}>
           {/* Company Info */}
-          <Grid size={{xs:12, md:4}} >
+          <Grid size={{ xs: 12, md: 4 }} >
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Spa sx={{ fontSize: 32, color: theme.palette.secondary.main, mr: 1 }} />
               <Typography variant="h4" fontWeight="800" color="white">
@@ -65,10 +65,10 @@ export default function Footer() {
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ mb: 3, lineHeight: 1.6 }}>
-              Transforming lives through the ancient wisdom of yoga combined with modern technology. 
+              Transforming lives through the ancient wisdom of yoga combined with modern technology.
               Join our community to discover inner peace and physical wellbeing.
             </Typography>
-            
+
             {/* Newsletter Subscription */}
             {/* <Box>
               <Typography variant="h6" color="white" gutterBottom>
@@ -107,7 +107,7 @@ export default function Footer() {
           </Grid>
 
           {/* Quick Links */}
-          <Grid size={{xs:12, md:2, sm:6}}>
+          <Grid size={{ xs: 12, md: 2, sm: 6 }}>
             <Typography variant="h6" gutterBottom color="white" sx={{ mb: 3 }}>
               Explore
             </Typography>
@@ -122,7 +122,7 @@ export default function Footer() {
           </Grid>
 
           {/* Resources */}
-          <Grid size={{xs:12, md:2, sm:6}} >
+          <Grid size={{ xs: 12, md: 2, sm: 6 }} >
             <Typography variant="h6" gutterBottom color="white" sx={{ mb: 3 }}>
               Support
             </Typography>
@@ -132,6 +132,12 @@ export default function Footer() {
               </Link>
               <Link href="/terms-of-service" underline="none" color="inherit" sx={{ '&:hover': { color: theme.palette.secondary.main } }}>
                 Terms of Service
+              </Link>
+              <Link href="/customer-support" underline="none" color="inherit" sx={{ '&:hover': { color: theme.palette.secondary.main } }}>
+                Customer support
+              </Link>
+              <Link href="/canellation-refund" underline="none" color="inherit" sx={{ '&:hover': { color: theme.palette.secondary.main } }}>
+                Cancellation & Refund Policy
               </Link>
               {/* <Link href="#" underline="none" color="inherit" sx={{ '&:hover': { color: theme.palette.secondary.main } }}>
                 FAQs
@@ -143,11 +149,11 @@ export default function Footer() {
           </Grid>
 
           {/* Contact & Social */}
-          <Grid size={{xs:12, md:4}} >
+          <Grid size={{ xs: 12, md: 4 }} >
             <Typography variant="h6" gutterBottom color="white" sx={{ mb: 3 }}>
               Connect With Us
             </Typography>
-            
+
             {/* Contact Information */}
             <Box sx={{ mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -176,9 +182,9 @@ export default function Footer() {
                 Follow our journey
               </Typography>
               <Box>
-                <IconButton 
-                  sx={{ 
-                    color: 'white', 
+                <IconButton
+                  sx={{
+                    color: 'white',
                     backgroundColor: alpha(theme.palette.common.white, 0.1),
                     mr: 1,
                     '&:hover': { backgroundColor: '#1877F2', color: 'white' }
@@ -186,9 +192,10 @@ export default function Footer() {
                 >
                   <Facebook />
                 </IconButton>
-                <IconButton 
-                  sx={{ 
-                    color: 'white', 
+                <IconButton
+                  onClick={() => window.open("https://www.instagram.com/yogdhara.ananta?igsh=MTdobXkyczFta2FvaA==", "_blank")}
+                  sx={{
+                    color: 'white',
                     backgroundColor: alpha(theme.palette.common.white, 0.1),
                     mr: 1,
                     '&:hover': { backgroundColor: '#E4405F', color: 'white' }
@@ -205,10 +212,10 @@ export default function Footer() {
         <Divider sx={{ bgcolor: alpha(theme.palette.common.white, 0.2), my: 2 }} />
 
         {/* Bottom Copyright */}
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', sm: 'row' }, 
-          justifyContent: 'space-between', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
           alignItems: 'center',
           py: 3,
           gap: 1
@@ -222,6 +229,12 @@ export default function Footer() {
             </Link>
             <Link href="/terms-of-service" underline="none" color="grey.400" variant="body2">
               Terms of Service
+            </Link>
+            <Link href="/customer-support" underline="none" color="grey.400" variant="body2">
+              Customer support
+            </Link>
+            <Link href="/canellation-refund" underline="none" color="grey.400" variant="body2">
+              Cancellation & Refund Policy
             </Link>
           </Box>
         </Box>

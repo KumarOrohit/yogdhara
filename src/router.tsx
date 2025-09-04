@@ -18,6 +18,8 @@ import SuccessPaymentPage from "./pages/payment/PaymentSuccess";
 import StudentProfilePage from "./pages/dashboard/student/profile/Profile";
 import TermsOfService from "./pages/termsofservie/TermsOfService";
 import PrivacyPolicy from "./pages/privacypolicy/PrivacyPolicy";
+import CustomerSupport from "./pages/customerSupport/CustomerSupport";
+import CancellationRefundPolicy from "./pages/cancellationRefund/CancellationRefundPolicy";
 
 
 
@@ -28,6 +30,8 @@ const AppRoutes = () => (
         <Route path="/yoga-hub" element={<Layout><YogaHub /></Layout>} />
         <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />
         <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
+        <Route path="/customer-support" element={<Layout><CustomerSupport /></Layout>} />
+        <Route path="/canellation-refund" element={<Layout><CancellationRefundPolicy /></Layout>} />
         <Route path="/success/:paymentId" element={<Layout><SuccessPaymentPage /></Layout>} />
 
         <Route path="/dashboard/tea/home" element={<DashboardLayout><TeacherHome /></DashboardLayout>} />

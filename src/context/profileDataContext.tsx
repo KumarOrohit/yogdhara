@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import HomeApiService from "../pages/home/homeService";
 import { useAuth } from "./authContext";
 

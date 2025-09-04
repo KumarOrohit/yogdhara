@@ -1,5 +1,11 @@
 import { apiClient } from "../../services/apiService";
 
+interface SupportFormData {
+  email: string;
+  query: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
 export default class HomeApiService {
 
     static getLevelList = async () => {
@@ -95,6 +101,18 @@ export default class HomeApiService {
                     headers: { "Content-Type": "multipart/form-data" },
                 }
             );
+            return { ...response.data, status: response.status }
+
+        } catch (error) {
+            console.log("updateUserProfileService error", error);
+            return {};
+        }
+
+    }
+
+    static sendCustomerSupportQuery = async (formData: SupportFormData) => {
+        try {
+            const response = await apiClient.post("/account/op/customer-support/", formData);
             return { ...response.data, status: response.status }
 
         } catch (error) {

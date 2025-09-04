@@ -18,7 +18,11 @@ import {
   InputAdornment,
   Fab,
   Zoom,
-  Fade
+  Fade,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
 } from '@mui/material';
 import {
   PlayCircle,
@@ -32,7 +36,10 @@ import {
   KeyboardArrowUp,
   Spa,
   EmojiEvents,
-  AutoAwesome
+  AutoAwesome,
+  CheckCircle,
+  Description,
+  Close
 } from '@mui/icons-material';
 import PromotionVideo from '../../assets/PromotionVideo.mp4';
 import HomeApiService from '../home/homeService';
@@ -73,8 +80,19 @@ const YogaHub = () => {
   const [selectedBatchForPreview, setSelectedBatchForPreview] = useState<Batch | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const location = useLocation();
+  const [descriptionDialogOpen, setDescriptionDialogOpen] = useState(false);
 
-  const handleEnrollClick = (batch: Batch) => {
+  const handleReadMoreClick = (batch: Batch) => {
+    setSelectedBatch(batch);
+    setDescriptionDialogOpen(true);
+  };
+
+  const handleCloseDescriptionDialog = () => {
+    setDescriptionDialogOpen(false);
+    setSelectedBatch(null);
+  };
+
+  const handleEnrollClick = (batch: Batch | null) => {
     setSelectedBatch(batch);
     setShowPaymentModal(true);
   };
@@ -136,10 +154,10 @@ const YogaHub = () => {
   const filteredBatches = activeCategory === 'all'
     ? batches
     : batches.filter(batch =>
-        (batch.learning || []).some(learning =>
-          learning.toLowerCase().replace(/\s+/g, '-') === activeCategory
-        )
-      );
+      (batch.learning || []).some(learning =>
+        learning.toLowerCase().replace(/\s+/g, '-') === activeCategory
+      )
+    );
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -358,6 +376,9 @@ const YogaHub = () => {
                     overflow: 'hidden',
                     transition: 'all 0.3s ease',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&:hover': {
                       transform: 'translateY(-8px)',
                       boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
@@ -370,6 +391,7 @@ const YogaHub = () => {
                         height="240"
                         image={batch.thumbnail || "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
                         alt={batch.name}
+                        sx={{ objectFit: 'cover' }}
                       />
 
                       {/* Overlay Gradient */}
@@ -440,14 +462,27 @@ const YogaHub = () => {
                           bottom: 16,
                           left: 16,
                           backgroundColor: alpha(theme.palette.primary.main, 0.9),
-                          color: 'white'
+                          color: 'white',
+                          fontWeight: '600'
                         }}
                       />
                     </Box>
 
-                    <CardContent sx={{ p: 3 }}>
+                    <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                       {/* Batch Name and Instructor */}
-                      <Typography variant="h5" fontWeight="700" gutterBottom>
+                      <Typography
+                        variant="h5"
+                        fontWeight="700"
+                        gutterBottom
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          minHeight: '64px'
+                        }}
+                      >
                         {batch.name}
                       </Typography>
 
@@ -456,20 +491,61 @@ const YogaHub = () => {
                           src={batch.instructor.profile || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"}
                           sx={{ width: 32, height: 32, mr: 1.5 }}
                         />
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography
+                          variant="body1"
+                          color="text.secondary"
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
                           By {batch.instructor.name}
                         </Typography>
                       </Box>
 
-                      {/* Description */}
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2, height: 40 }}>
-                        {batch.description}
-                      </Typography>
+                      {/* Description with expandable functionality */}
+                      <Box sx={{ mb: 2, flexGrow: 1 }}>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            minHeight: '60px'
+                          }}
+                        >
+                          {batch.description}
+                        </Typography>
+                        {batch.description && batch.description.length > 150 && (
+                          <Button
+                            size="small"
+                            sx={{ mt: 0.5, fontSize: '0.75rem' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleReadMoreClick(batch);
+                            }}
+                          >
+                            Read more
+                          </Button>
+                        )}
+                      </Box>
 
                       {/* Schedule and Duration */}
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Schedule sx={{ fontSize: 18, mr: 1, color: 'text.secondary' }} />
-                        <Typography variant="body2" color="text.secondary">
+                        <Schedule sx={{ fontSize: 18, mr: 1, color: 'text.secondary', flexShrink: 0 }} />
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
                           {batch.schedule} • {batch.duration}
                         </Typography>
                       </Box>
@@ -477,12 +553,12 @@ const YogaHub = () => {
                       {/* Rating and Students */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Star color="warning" sx={{ fontSize: 18, mr: 0.5 }} />
+                          <Star color="warning" sx={{ fontSize: 18, mr: 0.5, flexShrink: 0 }} />
                           <Typography variant="body2" fontWeight="600">
                             {batch.rating}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
-                            ({batch.students || 58} students)
+                            ({batch.students || 58})
                           </Typography>
                         </Box>
 
@@ -492,7 +568,7 @@ const YogaHub = () => {
                       </Box>
 
                       {/* Action Buttons */}
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: 'flex', gap: 1, mt: 'auto' }}>
                         <Button
                           fullWidth
                           variant="contained"
@@ -506,6 +582,7 @@ const YogaHub = () => {
                         >
                           Enroll Now
                         </Button>
+
                         {/* Preview Video Section */}
                         {batch.preview_video && (
                           <Button
@@ -515,14 +592,14 @@ const YogaHub = () => {
                             sx={{
                               minWidth: 'auto',
                               borderRadius: 2,
-                              px: 2
+                              px: 2,
+                              flexShrink: 0
                             }}
                             onClick={() => handlePreviewClick(batch)}
                           >
                             <PlayCircle />
                           </Button>
                         )}
-
                       </Box>
                     </CardContent>
                   </Card>
@@ -614,6 +691,113 @@ const YogaHub = () => {
           onCancel={handlePaymentCancel}
           open={showPaymentModal}
         />
+      )}
+
+
+      {descriptionDialogOpen && (
+        <Dialog
+          open={descriptionDialogOpen}
+          onClose={handleCloseDescriptionDialog}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              background: `linear-gradient(, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`
+            }
+          }}
+        >
+          <DialogTitle sx={{
+            m: 0,
+            p: 3,
+            display: 'flex',
+            alignItems: 'center',
+            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+            color: 'white'
+          }}>
+            <Description sx={{ mr: 2 }} />
+            Batch Description
+            <IconButton
+              aria-label="close"
+              onClick={handleCloseDescriptionDialog}
+              sx={{
+                position: 'absolute',
+                right: 16,
+                top: 16,
+                color: 'white',
+              }}
+            >
+              <Close />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent dividers sx={{ p: 4 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h4" fontWeight="700" gutterBottom color="primary">
+                {selectedBatch?.name}
+              </Typography>
+
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar
+                  src={selectedBatch?.instructor.profile || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"}
+                  sx={{ width: 40, height: 40, mr: 2 }}
+                />
+                <Box>
+                  <Typography variant="h6">
+                    {selectedBatch?.instructor.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Yoga Instructor
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            <Box sx={{
+              p: 3,
+              backgroundColor: 'white',
+              borderRadius: 2,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+            }}>
+              <Typography variant="h6" gutterBottom color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
+                <Description color="primary" sx={{ mr: 1 }} />
+                About This Batch
+              </Typography>
+
+              <Typography variant="body1" paragraph sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
+                {selectedBatch?.description}
+              </Typography>
+
+              {selectedBatch?.description && (
+                <Typography variant="body1" sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
+                  {selectedBatch.description}
+                </Typography>
+              )}
+            </Box>
+
+
+          </DialogContent>
+
+          <DialogActions sx={{ p: 3, justifyContent: 'center' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => {
+                handleCloseDescriptionDialog();
+                handleEnrollClick(selectedBatch);
+              }}
+              sx={{
+                borderRadius: 2,
+                px: 4,
+                py: 1.2,
+                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`
+              }}
+            >
+              Enroll Now
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
 
     </Box>
