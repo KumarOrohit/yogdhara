@@ -37,7 +37,6 @@ import {
   Spa,
   EmojiEvents,
   AutoAwesome,
-  CheckCircle,
   Description,
   Close
 } from '@mui/icons-material';
