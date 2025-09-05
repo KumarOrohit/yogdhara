@@ -17,7 +17,12 @@ import {
     alpha,
     CircularProgress,
     Alert,
-    Dialog
+    Dialog,
+    FormControlLabel,
+    Radio,
+    RadioGroup,
+    FormControl,
+    FormLabel
 } from '@mui/material';
 import {
     CheckCircle,
@@ -29,11 +34,12 @@ import HomeApiService from '../home/homeService';
 import { useAuth } from '../../context/authContext';
 import LoginModal from '../../components/home/LoginModal';
 import PaymentApiService from './paymentApiService';
+// import EnrollmentApiService from './enrollmentApiService';
 
 const steps = ['Batch Details', 'Payment'];
 
 interface Batch {
-    id: number;
+    id: string;
     name: string;
     price: number;
     duration: string;
@@ -45,18 +51,22 @@ interface Batch {
         profile: string | null;
     };
     description: string;
+    is_free_trial_available: boolean;
+    number_of_free_trial_class: number;
 }
 
 interface StripePaymentWrapperProps {
     batch: Batch;
     onCancel: () => void;
     open: boolean;
+    onEnrollmentSuccess?: () => void;
 }
 
 const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
     batch,
     onCancel,
-    open
+    open,
+    onEnrollmentSuccess
 }) => {
     const theme = useTheme();
     const { isAuthenticated } = useAuth();
@@ -64,14 +74,19 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
     const [loading, setLoading] = useState(false);
     const [paymentError, setPaymentError] = useState('');
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [enrollmentOption, setEnrollmentOption] = useState<'trial' | 'full'>('trial');
+    const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
 
     useEffect(() => {
         // Reset steps when modal opens/closes
         if (open) {
             setActiveStep(0);
             setPaymentError('');
+            setEnrollmentSuccess(false);
+            // Default to trial if available, otherwise full payment
+            setEnrollmentOption(batch.is_free_trial_available ? 'trial' : 'full');
         }
-    }, [open]);
+    }, [open, batch.is_free_trial_available]);
 
     const handleNext = () => {
         if (activeStep === 0) {
@@ -80,7 +95,13 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
                 setShowLoginModal(true);
                 return;
             }
-            setActiveStep(1);
+            
+            // If free trial is selected and available, enroll directly
+            if (enrollmentOption === 'trial' && batch.is_free_trial_available) {
+                handleFreeTrialEnrollment();
+            } else {
+                setActiveStep(1);
+            }
         } else if (activeStep === 1) {
             handlePayment();
         }
@@ -91,6 +112,28 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
             onCancel();
         } else {
             setActiveStep(activeStep - 1);
+        }
+    };
+
+    const handleFreeTrialEnrollment = async () => {
+        setLoading(true);
+        setPaymentError('');
+
+        try {
+            console.log("Batch ID for free trial:", batch);
+            const response = await PaymentApiService.enrollForFreeTrial(batch.id);
+            
+            if (response.status === 200) {
+                setEnrollmentSuccess(true);
+                onEnrollmentSuccess?.();
+            } else {
+                setPaymentError('Failed to enroll in free trial. Please try again.');
+            }
+        } catch (error) {
+            console.error('Free trial enrollment error:', error);
+            setPaymentError('Free trial enrollment failed. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -122,8 +165,12 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
 
     const handleLoginSuccess = () => {
         setShowLoginModal(false);
-        // After successful login, proceed to payment step
-        setActiveStep(1);
+        // After successful login, proceed based on enrollment option
+        if (enrollmentOption === 'trial' && batch.is_free_trial_available) {
+            handleFreeTrialEnrollment();
+        } else {
+            setActiveStep(1);
+        }
     };
 
     const handleGetOtp = async (email: string) => {
@@ -145,11 +192,18 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
     const renderStepContent = (step: number) => {
         switch (step) {
             case 0:
-                return <BatchDetailsStep batch={batch} />;
+                return <BatchDetailsStep 
+                    batch={batch} 
+                    enrollmentOption={enrollmentOption}
+                    onOptionChange={setEnrollmentOption}
+                />;
             case 1:
                 return <PaymentStep batch={batch} loading={loading} />;
             case 2:
-                return <ConfirmationStep batch={batch} />;
+                return <ConfirmationStep 
+                    batch={batch} 
+                    isTrial={enrollmentOption === 'trial' && batch.is_free_trial_available}
+                />;
             default:
                 return null;
         }
@@ -185,25 +239,30 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
                             )}
 
                             {/* Navigation Buttons */}
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-                                <Button
-                                    onClick={handleBack}
-                                    disabled={loading}
-                                >
-                                    {activeStep === 0 ? 'Cancel' : 'Back'}
-                                </Button>
-
-                                {activeStep < 2 && (
+                            {!enrollmentSuccess && (
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
                                     <Button
-                                        variant="contained"
-                                        onClick={handleNext}
+                                        onClick={handleBack}
                                         disabled={loading}
-                                        startIcon={loading ? <CircularProgress size={16} /> : null}
                                     >
-                                        {activeStep === 0 ? 'Continue to Payment' : 'Pay Now'}
+                                        {activeStep === 0 ? 'Cancel' : 'Back'}
                                     </Button>
-                                )}
-                            </Box>
+
+                                    {activeStep < 2 && (
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleNext}
+                                            disabled={loading}
+                                            startIcon={loading ? <CircularProgress size={16} /> : null}
+                                        >
+                                            {activeStep === 0 ? 
+                                                (enrollmentOption === 'trial' && batch.is_free_trial_available ? 
+                                                    'Start Free Trial' : 'Continue to Payment') : 
+                                                'Pay Now'}
+                                        </Button>
+                                    )}
+                                </Box>
+                            )}
                         </Box>
                     </Paper>
                 </Container>
@@ -223,9 +282,11 @@ const BatchEnrollmentPayment: React.FC<StripePaymentWrapperProps> = ({
 
 interface BatchDetailsStepProps {
     batch: Batch;
+    enrollmentOption: 'trial' | 'full';
+    onOptionChange: (option: 'trial' | 'full') => void;
 }
 
-const BatchDetailsStep: React.FC<BatchDetailsStepProps> = ({ batch }) => {
+const BatchDetailsStep: React.FC<BatchDetailsStepProps> = ({ batch, enrollmentOption, onOptionChange }) => {
     const theme = useTheme();
 
     return (
@@ -284,6 +345,47 @@ const BatchDetailsStep: React.FC<BatchDetailsStepProps> = ({ batch }) => {
                 </CardContent>
             </Card>
 
+            {/* Enrollment Options */}
+            {batch.is_free_trial_available && (
+                <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
+                    <FormLabel component="legend">Enrollment Options:</FormLabel>
+                    <RadioGroup
+                        value={enrollmentOption}
+                        onChange={(e) => onOptionChange(e.target.value as 'trial' | 'full')}
+                        sx={{ mt: 1 }}
+                    >
+                        <FormControlLabel
+                            value="trial"
+                            control={<Radio />}
+                            label={
+                                <Box>
+                                    <Typography variant="body1" fontWeight="500">
+                                        Free Trial - {batch.number_of_free_trial_class} classes
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Try before you buy with our free trial offer
+                                    </Typography>
+                                </Box>
+                            }
+                        />
+                        <FormControlLabel
+                            value="full"
+                            control={<Radio />}
+                            label={
+                                <Box>
+                                    <Typography variant="body1" fontWeight="500">
+                                        Full Enrollment
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Get immediate access to all content
+                                    </Typography>
+                                </Box>
+                            }
+                        />
+                    </RadioGroup>
+                </FormControl>
+            )}
+
             <Box sx={{
                 backgroundColor: alpha(theme.palette.primary.main, 0.05),
                 p: 3,
@@ -291,10 +393,14 @@ const BatchDetailsStep: React.FC<BatchDetailsStepProps> = ({ batch }) => {
                 textAlign: 'center'
             }}>
                 <Typography variant="h4" color="primary.main" gutterBottom>
-                    ₹{batch.price}
+                    {enrollmentOption === 'trial' && batch.is_free_trial_available ? 
+                        `Free Trial (${batch.number_of_free_trial_class} classes)` : 
+                        `₹${batch.price}`}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    One-time payment for full batch access
+                    {enrollmentOption === 'trial' && batch.is_free_trial_available ? 
+                        'No payment required for trial period' : 
+                        'One-time payment for full batch access'}
                 </Typography>
             </Box>
         </Box>
@@ -367,34 +473,60 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ batch, loading }) => {
 
 interface ConfirmationStepProps {
     batch: Batch;
+    isTrial: boolean;
 }
 
-const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ batch }) => {
+const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ batch, isTrial }) => {
     return (
         <Box sx={{ textAlign: 'center' }}>
             <CheckCircle sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
             <Typography variant="h4" gutterBottom>
-                Enrollment Confirmed!
+                {isTrial ? 'Free Trial Started!' : 'Enrollment Confirmed!'}
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                You have successfully enrolled in <strong>{batch.name}</strong>
-            </Typography>
-
-            <Box sx={{
-                backgroundColor: 'success.light',
-                color: 'success.contrastText',
-                p: 3,
-                borderRadius: 2,
-                mb: 3
-            }}>
-                <Typography variant="h6" gutterBottom>
-                    Welcome to the batch!
-                </Typography>
-                <Typography variant="body2">
-                    Check your email for enrollment details and access instructions.
-                    Your batch will begin as scheduled.
-                </Typography>
-            </Box>
+            
+            {isTrial ? (
+                <>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+                        You have started your free trial for <strong>{batch.name}</strong>
+                    </Typography>
+                    <Box sx={{
+                        backgroundColor: 'info.light',
+                        color: 'info.contrastText',
+                        p: 3,
+                        borderRadius: 2,
+                        mb: 3
+                    }}>
+                        <Typography variant="h6" gutterBottom>
+                            {batch.number_of_free_trial_class} Free Classes
+                        </Typography>
+                        <Typography variant="body2">
+                            Enjoy {batch.number_of_free_trial_class} free classes. After completing your trial, 
+                            you can choose to pay for full access to continue learning.
+                        </Typography>
+                    </Box>
+                </>
+            ) : (
+                <>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+                        You have successfully enrolled in <strong>{batch.name}</strong>
+                    </Typography>
+                    <Box sx={{
+                        backgroundColor: 'success.light',
+                        color: 'success.contrastText',
+                        p: 3,
+                        borderRadius: 2,
+                        mb: 3
+                    }}>
+                        <Typography variant="h6" gutterBottom>
+                            Welcome to the batch!
+                        </Typography>
+                        <Typography variant="body2">
+                            Check your email for enrollment details and access instructions.
+                            Your batch will begin as scheduled.
+                        </Typography>
+                    </Box>
+                </>
+            )}
 
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
                 <Button variant="outlined" startIcon={<Spa />}>

@@ -48,7 +48,7 @@ import StripePaymentWrapper from '../payment/Payment';
 
 // Define the batch interface based on the provided structure
 interface Batch {
-  id: number;
+  id: string;
   name: string;
   thumbnail: string | null;
   preview_video: string | null,
@@ -66,11 +66,13 @@ interface Batch {
     name: string;
     profile: string | null;
   };
+  is_free_trial_available: boolean;
+  number_of_free_trial_class: number;
 }
 
 const YogaHub = () => {
   const theme = useTheme();
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [batches, setBatches] = useState<Batch[]>([] as Batch[]);
@@ -128,7 +130,7 @@ const YogaHub = () => {
     }
   }, []);
 
-  const toggleFavorite = (id: number) => {
+  const toggleFavorite = (id: string) => {
     setFavorites(prev =>
       prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id]
     );

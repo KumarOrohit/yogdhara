@@ -58,6 +58,8 @@ interface Batch {
   thumbnail: string;
   is_popular: boolean;
   start_date: string;
+  is_free_trial_available: boolean;
+  number_of_free_trial_class: number;
 }
 
 interface ApiResponse {
@@ -105,7 +107,7 @@ const BatchStore = () => {
       setLoading(true);
       setError(null);
       const response = await StudentApiService.getStoreBatches();
-      
+
       if (response.status === 200 && response.store_data) {
         setData(response.store_data);
       } else {
@@ -123,12 +125,12 @@ const BatchStore = () => {
   const filteredBatches = data?.batches
     ?.filter(batch => {
       const matchesSearch = batch.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           batch.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           batch.description.toLowerCase().includes(searchTerm.toLowerCase());
+        batch.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        batch.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesLevel = selectedLevel === 'all' || batch.level === selectedLevel;
       const matchesLearning = selectedLearning === 'all' || batch.learnings.includes(selectedLearning);
       const matchesPrice = batch.price >= priceRange[0] && batch.price <= priceRange[1];
-      
+
       return matchesSearch && matchesLevel && matchesLearning && matchesPrice;
     })
     .sort((a, b) => {
@@ -154,17 +156,17 @@ const BatchStore = () => {
   );
 
   const toggleFavorite = (id: string) => {
-    setFavorites(prev => 
+    setFavorites(prev =>
       prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id]
     );
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -226,7 +228,7 @@ const BatchStore = () => {
       {/* Filters and Search */}
       <Paper sx={{ p: 3, mb: 4, borderRadius: 3 }}>
         <Grid container spacing={3} alignItems="center">
-          <Grid size={{xs:12, md:6}}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               placeholder="Search batches, instructors, or styles..."
@@ -246,8 +248,8 @@ const BatchStore = () => {
               }}
             />
           </Grid>
-          
-          <Grid size={{xs:12, md:6}}>
+
+          <Grid size={{ xs: 12, md: 6 }}>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <FormControl size="small" sx={{ minWidth: 120 }}>
                 <InputLabel>Level</InputLabel>
@@ -296,7 +298,7 @@ const BatchStore = () => {
             </Box>
           </Grid>
 
-          <Grid size={{xs:12}}>
+          <Grid size={{ xs: 12 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Typography variant="body2" fontWeight="500">
                 Price Range:
@@ -324,10 +326,10 @@ const BatchStore = () => {
         <Typography variant="h6" color="text.secondary">
           {filteredBatches.length} batches found
         </Typography>
-        <Chip 
-          icon={<FilterList />} 
-          label="Filters Applied" 
-          variant="outlined" 
+        <Chip
+          icon={<FilterList />}
+          label="Filters Applied"
+          variant="outlined"
           onDelete={() => {
             setSelectedLevel('all');
             setSelectedLearning('all');
@@ -341,9 +343,9 @@ const BatchStore = () => {
         <>
           <Grid container spacing={3}>
             {paginatedBatches.map((batch) => (
-              <Grid size={{xs:12, md:6, lg:4}} key={batch.id}>
-                <Card 
-                  sx={{ 
+              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={batch.id}>
+                <Card
+                  sx={{
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
@@ -364,7 +366,7 @@ const BatchStore = () => {
                       alt={batch.name}
                       sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
                     />
-                    
+
                     {/* Favorite Button */}
                     <IconButton
                       sx={{
@@ -422,10 +424,10 @@ const BatchStore = () => {
                     <Typography variant="h6" fontWeight="600" gutterBottom>
                       {batch.name}
                     </Typography>
-                    
+
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        src={batch.instructor_avatar} 
+                      <Avatar
+                        src={batch.instructor_avatar}
                         sx={{ width: 24, height: 24, mr: 1 }}
                       />
                       <Typography variant="body2" color="text.secondary">
@@ -461,14 +463,14 @@ const BatchStore = () => {
                           {batch.rating}
                         </Typography>
                       </Box>
-                      
+
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <People sx={{ fontSize: 18, mr: 0.5, color: 'text.secondary' }} />
                         <Typography variant="body2" color="text.secondary">
                           {batch.students}
                         </Typography>
                       </Box>
-                      
+
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <AccessTime sx={{ fontSize: 18, mr: 0.5, color: 'text.secondary' }} />
                         <Typography variant="body2" color="text.secondary">
@@ -498,8 +500,8 @@ const BatchStore = () => {
                       <Typography variant="h6" color="primary.main" fontWeight="600">
                         ₹{batch.price}
                       </Typography>
-                      <Button 
-                        variant="contained" 
+                      <Button
+                        variant="contained"
                         color="primary"
                         onClick={() => handleEnrollClick(batch)}
                       >
@@ -541,7 +543,7 @@ const BatchStore = () => {
       {selectedBatch && (
         <StripePaymentWrapper
           batch={{
-            id: parseInt(selectedBatch.id),
+            id: selectedBatch.id,
             name: selectedBatch.name,
             price: selectedBatch.price,
             duration: selectedBatch.duration,
@@ -552,7 +554,9 @@ const BatchStore = () => {
               name: selectedBatch.instructor,
               profile: selectedBatch.instructor_avatar
             },
-            description: selectedBatch.description
+            description: selectedBatch.description,
+            is_free_trial_available: selectedBatch.is_free_trial_available,
+            number_of_free_trial_class: selectedBatch.number_of_free_trial_class
           }}
           onCancel={handlePaymentCancel}
           open={showPaymentModal}
