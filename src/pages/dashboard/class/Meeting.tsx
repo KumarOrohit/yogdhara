@@ -132,7 +132,7 @@ const MeetingRoom: React.FC = () => {
                     const client = new WebPubSubClient(response.url);
 
                     client.on("connected", async (e) => {
-                        console.log("ðŸŸ¢ Connected to Azure Web PubSub");
+                        console.log("ðŸŸ¢ Connected to Azure Web PubSub", e);
 
                         // Join the room
                         await client.joinGroup(roomId);

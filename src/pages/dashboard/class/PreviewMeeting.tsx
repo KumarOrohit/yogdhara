@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Typography,
-  Avatar,
   Button,
   IconButton,
   Stack,
