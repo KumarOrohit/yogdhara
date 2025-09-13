@@ -17,12 +17,14 @@ import {
 import './Calendar.scss';
 import type { Class } from './types';
 import TeacherApiService from '../teacher/teacherApiService';
+import { useNavigate } from 'react-router-dom';
 
 
 const calendar = () => {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [userTimezone, setUserTimezone] = useState<string>('');
   const [classData, setClassData] = useState<Class[]>([]);
+  const navigate = useNavigate();
 
   const getClassDataHandler = async () => {
     const response = await TeacherApiService.getClassList();
@@ -76,8 +78,8 @@ const calendar = () => {
     };
   };
 
-  const handleClassClick = (classLink: string) => {
-    window.open(classLink, '_blank');
+  const handleClassClick = (classItem: Class) => {
+    navigate(`/preview-meeting/${classItem.id}`, { state: { classData: classItem } });
   };
 
   if (!userTimezone) {
@@ -132,7 +134,7 @@ const calendar = () => {
               key={classItem.id}
               className={`class-event ${isCurrent ? 'current-class' : ''}`}
               style={position}
-              onClick={() => handleClassClick(classItem.classLink)}
+              onClick={() => handleClassClick(classItem)}
             >
               <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
                 <Typography variant="h6" className="class-title">

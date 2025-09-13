@@ -20,6 +20,8 @@ import TermsOfService from "./pages/termsofservie/TermsOfService";
 import PrivacyPolicy from "./pages/privacypolicy/PrivacyPolicy";
 import CustomerSupport from "./pages/customerSupport/CustomerSupport";
 import CancellationRefundPolicy from "./pages/cancellationRefund/CancellationRefundPolicy";
+import MeetingPreview from "./pages/dashboard/class/PreviewMeeting";
+import MeetingRoom from "./pages/dashboard/class/Meeting";
 
 
 
@@ -33,6 +35,8 @@ const AppRoutes = () => (
         <Route path="/customer-support" element={<Layout><CustomerSupport /></Layout>} />
         <Route path="/canellation-refund" element={<Layout><CancellationRefundPolicy /></Layout>} />
         <Route path="/success/:paymentId" element={<Layout><SuccessPaymentPage /></Layout>} />
+        <Route path="/preview-meeting/:classId" element={<DashboardLayout><MeetingPreview /></DashboardLayout>} />
+        <Route path="/meeting/:classId" element={<DashboardLayout><MeetingRoom /></DashboardLayout>} />
 
         <Route path="/dashboard/tea/home" element={<DashboardLayout><TeacherHome /></DashboardLayout>} />
         <Route path="/dashboard/tea/batch" element={<DashboardLayout><TeacherBatch /></DashboardLayout>} />
@@ -42,12 +46,14 @@ const AppRoutes = () => (
         <Route path="/dashboard/tea/promotion" element={<DashboardLayout><BatchPromotionPage /></DashboardLayout>} />
         <Route path="/dashboard/tea/cryptic" element={<DashboardLayout><Cryptic /></DashboardLayout>} />
         <Route path="/dashboard/tea/profile" element={<DashboardLayout><InstructorProfile /></DashboardLayout>} />
+        
 
         <Route path="/dashboard/stu/home" element={<DashboardLayout><StudentDashboard /></DashboardLayout>} />
         <Route path="/dashboard/stu/class" element={<DashboardLayout><Calendar /></DashboardLayout>} />
         <Route path="/dashboard/stu/store" element={<DashboardLayout><BatchStore /></DashboardLayout>} />
         <Route path="/dashboard/stu/batch" element={<DashboardLayout><StudentEnrolledBatches /></DashboardLayout>} />
         <Route path="/dashboard/stu/profile" element={<DashboardLayout><StudentProfilePage /></DashboardLayout>} />
+        <Route path="/dashboard/stu/meeting" element={<DashboardLayout><MeetingRoom /></DashboardLayout>} />
     </Routes>
 
 );

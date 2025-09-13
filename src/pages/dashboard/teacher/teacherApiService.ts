@@ -72,4 +72,15 @@ export default class TeacherApiService {
             return {};
         }
     }
+
+    static getMeetingToken = async () => {
+        try{
+            const response = await apiClient.get(`/batch/token/`);
+
+            return {...response.data, status: response.status}
+        } catch (error) {
+            console.log("getClassList error", error);
+            return {};
+        }
+    }
 }
