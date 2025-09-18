@@ -3,7 +3,8 @@ import {
   People,
   Class as ClassIcon,
   Campaign as CampaignIcon,
-  AccountCircle
+  AccountCircle,
+  SmartToy
 } from "@mui/icons-material";
 
 
@@ -12,7 +13,7 @@ export const TeacherMenu = [
   { text: "Batch", icon: <People />, path: "/dashboard/tea/batch" },
   { text: "Class", icon: <ClassIcon />, path: "/dashboard/tea/class" },
   { text: "Promotion", icon: <CampaignIcon />, path: "/dashboard/tea/promotion" },
-  // { text: "Cryptic", icon: <SmartToyIcon />, path: "/dashboard/tea/cryptic" },
+  { text: "Cryptic", icon: <SmartToy />, path: "/dashboard/tea/cryptic" },
   { text: "Profile", icon: <AccountCircle />, path: "/dashboard/tea/profile" },
 ];
 

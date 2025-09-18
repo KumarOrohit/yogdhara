@@ -153,7 +153,7 @@ function Header() {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Yogdhara
+                Arogya Ananta
               </Typography>
             </Box>
 
@@ -218,7 +218,7 @@ function Header() {
                 textDecoration: 'none',
               }}
             >
-              Yogdhara
+              Arogya Ananta
             </Typography>
 
             {/* Desktop Navigation */}

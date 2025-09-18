@@ -20,7 +20,31 @@ import {
   Slide,
   Zoom,
   Fab,
-  CircularProgress
+  CircularProgress,
+  Stepper,
+  Step,
+  StepLabel,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Tabs,
+  Tab,
+  CardMedia,
+  LinearProgress,
+  Avatar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText as MuiListItemText,
+  Fade
 } from '@mui/material';
 import {
   ArrowUpward,
@@ -29,10 +53,22 @@ import {
   TrendingUp,
   Info,
   Star,
+  Download,
+  Instagram,
+  CheckCircle,
+  Schedule,
+  Publish,
+  PlayArrow,
+  Tag,
+  Description,
+  People,
+  RecordVoiceOver,
+  Campaign
 } from '@mui/icons-material';
 import type { TransitionProps } from '@mui/material/transitions';
 import './Promotion.scss';
 import TeacherApiService from '../teacherApiService';
+import Slider from '@mui/material/Slider';
 
 // Transition for dialog
 const Transition = React.forwardRef(function Transition(
@@ -85,6 +121,26 @@ interface Batch {
   }>;
 }
 
+interface InstagramPromotion {
+  id: string;
+  batchId?: string;
+  contentDescription: string;
+  targetAudience: string[];
+  ageRange: [number, number];
+  brandVoice: string[];
+  callToAction: string;
+  customContent: string[];
+  status: 'processing' | 'ready' | 'promoted';
+  createdAt: string;
+  instagramHandle?: string;
+  generatedContent: {
+    videoUrl: string;
+    caption: string;
+    hashtags: string[];
+  };
+  promotionType: 'batch' | 'general';
+}
+
 const BatchPromotionPage: React.FC = () => {
   const theme = useTheme();
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -93,6 +149,20 @@ const BatchPromotionPage: React.FC = () => {
   const [promoteDialogOpen, setPromoteDialogOpen] = useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'promoted' | 'notPromoted'>('all');
+  const [instagramDialogOpen, setInstagramDialogOpen] = useState(false);
+  const [viewPromotionDialogOpen, setViewPromotionDialogOpen] = useState(false);
+  const [instagramPromotions, setInstagramPromotions] = useState<InstagramPromotion[]>([]);
+  const [selectedPromotion, setSelectedPromotion] = useState<InstagramPromotion | null>(null);
+  const [promotionType, setPromotionType] = useState<'batch' | 'general'>('batch');
+  const [processingProgress, setProcessingProgress] = useState(0);
+
+  // Instagram promotion form state
+  const [contentDescription, setContentDescription] = useState('');
+  const [targetAudience, setTargetAudience] = useState<string[]>([]);
+  const [ageRange, setAgeRange] = useState<[number, number]>([18, 35]);
+  const [brandVoice, setBrandVoice] = useState<string[]>([]);
+  const [callToAction, setCallToAction] = useState('handle');
+  const [customInstagramHandle, setCustomInstagramHandle] = useState('');
 
   // Filter batches based on current filter
   const filteredBatches = batches.filter(batch => {
@@ -152,7 +222,100 @@ const BatchPromotionPage: React.FC = () => {
     return learning.length > 0 ? learning[0] : "Yoga";
   };
 
+  // Instagram promotion handlers
+  const startInstagramPromotion = (batch: Batch | null, type: 'batch' | 'general') => {
+    setSelectedBatch(batch);
+    setPromotionType(type);
+    setInstagramDialogOpen(true);
+    
+    // Reset form
+    setContentDescription('');
+    setTargetAudience([]);
+    setAgeRange([18, 35]);
+    setBrandVoice([]);
+    setCallToAction('handle');
+    setCustomInstagramHandle('');
+  };
 
+  const createInstagramPromotion = () => {
+    setProcessingProgress(0);
+    
+    // Simulate processing
+    const interval = setInterval(() => {
+      setProcessingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 300);
+
+    // In a real app, this would be an API call
+    setTimeout(() => {
+      const newPromotion: InstagramPromotion = {
+        id: `ig-${Date.now()}`,
+        batchId: promotionType === 'batch' ? selectedBatch!.id : undefined,
+        contentDescription,
+        targetAudience,
+        ageRange,
+        brandVoice,
+        callToAction,
+        customContent: [],
+        status: promotionType === 'batch' ? 'processing' : 'ready',
+        createdAt: new Date().toISOString(),
+        instagramHandle: callToAction === 'handle' ? customInstagramHandle : undefined,
+        generatedContent: {
+          videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', // Sample video
+          caption: promotionType === 'batch' 
+            ? `Join my ${selectedBatch!.name} batch! Perfect for ${targetAudience.join(', ')} aged ${ageRange[0]}-${ageRange[1]}. ${contentDescription}`
+            : `${contentDescription}`,
+          hashtags: promotionType === 'batch' 
+            ? ['#Yoga', '#Fitness', '#Wellness', '#OnlineClasses', getFirstCategory(selectedBatch?.learning || []).replace(/\s+/g, '')]
+            : ['#Wellness', '#Lifestyle', '#Motivation', '#SelfCare']
+        },
+        promotionType
+      };
+
+      setInstagramPromotions([...instagramPromotions, newPromotion]);
+      setInstagramDialogOpen(false);
+      setViewPromotionDialogOpen(true);
+      setSelectedPromotion(newPromotion);
+      clearInterval(interval);
+    }, 3000);
+  };
+
+  const downloadContent = (promotion: InstagramPromotion) => {
+    // In a real app, this would download the actual content
+    alert('Download functionality would be implemented here');
+  };
+
+  const viewPromotion = (promotion: InstagramPromotion) => {
+    setSelectedPromotion(promotion);
+    setViewPromotionDialogOpen(true);
+  };
+
+  const getPromotionStatusIcon = (status: InstagramPromotion['status']) => {
+    switch (status) {
+      case 'processing':
+        return <CircularProgress size={16} />;
+      case 'ready':
+        return <CheckCircle color="info" />;
+      case 'promoted':
+        return <CheckCircle color="success" />;
+      default:
+        return <Info color="info" />;
+    }
+  };
+
+  const promoteOnInstagram = (promotion: InstagramPromotion) => {
+    // Simulate promotion process
+    const updatedPromotions = instagramPromotions.map(p => 
+      p.id === promotion.id ? {...p, status: 'promoted'} : p
+    );
+    setInstagramPromotions(updatedPromotions);
+    setSelectedPromotion({...promotion, status: 'promoted'});
+  };
 
   useEffect(() => {
     const fetchBatches = async () => {
@@ -201,7 +364,7 @@ const BatchPromotionPage: React.FC = () => {
             mx: 'auto'
           }}
         >
-          Boost your batch visibility! Promote your most popular batches to appear first in student searches and listings.
+          Boost your batch visibility! Promote your most popular batches to appear first in student searches and listings or create Instagram content.
         </Typography>
       </Box>
 
@@ -211,7 +374,8 @@ const BatchPromotionPage: React.FC = () => {
           p: 3,
           mb: 4,
           background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
-          border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`
+          border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+          borderRadius: 2
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -220,11 +384,110 @@ const BatchPromotionPage: React.FC = () => {
             Promotion Benefits
           </Typography>
         </Box>
-        <Typography variant="body1">
+        <Typography variant="body1" paragraph>
           Promoted batches appear at the top of search results and category listings, increasing visibility by up to 70%.
           You can promote up to 3 batches at a time. Promoting a new batch will automatically adjust the ranking of your currently promoted batches.
         </Typography>
+        <Typography variant="body1">
+          Now you can also create professional Instagram content to promote your batches! Get personalized videos, captions, and hashtags to share on your social media.
+        </Typography>
       </Paper>
+
+      {/* Instagram Promotions Section */}
+      {instagramPromotions.length > 0 && (
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Your Instagram Promotions
+            </Typography>
+            <Button 
+              variant="outlined" 
+              startIcon={<Instagram />}
+              onClick={() => startInstagramPromotion(null, 'general')}
+            >
+              Create New Content
+            </Button>
+          </Box>
+          <Grid container spacing={2}>
+            {instagramPromotions.map(promotion => {
+              const batch = promotion.batchId ? batches.find(b => b.id === promotion.batchId) : null;
+              return (
+                <Grid item xs={12} md={6} key={promotion.id}>
+                  <Card sx={{ display: 'flex', height: '100%', transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }}>
+                    <Box sx={{ width: 100, position: 'relative' }}>
+                      {batch?.thumbnail ? (
+                        <CardMedia
+                          component="img"
+                          height="100%"
+                          image={batch.thumbnail}
+                          alt={batch.name}
+                          sx={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <Box
+                          sx={{
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: 'grey.100'
+                          }}
+                        >
+                          <Instagram sx={{ fontSize: 40, color: 'grey.400' }} />
+                        </Box>
+                      )}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 8,
+                          right: 8,
+                          bgcolor: 'background.paper',
+                          borderRadius: '50%',
+                          p: 0.5
+                        }}
+                      >
+                        {getPromotionStatusIcon(promotion.status)}
+                      </Box>
+                    </Box>
+                    <Box sx={{ flexGrow: 1, p: 2 }}>
+                      <Typography variant="h6" noWrap>
+                        {batch?.name || 'General Promotion'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Created: {new Date(promotion.createdAt).toLocaleDateString()}
+                      </Typography>
+                      <Chip
+                        label={promotion.status.charAt(0).toUpperCase() + promotion.status.slice(1)}
+                        size="small"
+                        color={
+                          promotion.status === 'processing' ? 'info' :
+                          promotion.status === 'ready' ? 'primary' :
+                          promotion.status === 'promoted' ? 'success' : 'default'
+                        }
+                        variant="outlined"
+                        sx={{ mr: 1 }}
+                      />
+                      <Chip
+                        label={promotion.promotionType === 'batch' ? 'Batch Promotion' : 'General Content'}
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                      />
+                      <Button
+                        size="small"
+                        onClick={() => viewPromotion(promotion)}
+                        sx={{ mt: 1, display: 'block' }}
+                      >
+                        View Details
+                      </Button>
+                    </Box>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
+      )}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -259,7 +522,7 @@ const BatchPromotionPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {sortedBatches.map((batch, index) => (
-          <Grid size={{ xs: 12, md: 6 }} key={batch.id}>
+          <Grid item xs={12} md={6} key={batch.id}>
             <Zoom in={true} style={{ transitionDelay: `${index * 100}ms` }}>
               <Card
                 elevation={2}
@@ -362,14 +625,24 @@ const BatchPromotionPage: React.FC = () => {
                         variant="outlined"
                       />
                     ) : (
-                      <Button
-                        variant="contained"
-                        endIcon={<ArrowUpward />}
-                        onClick={() => handlePromote(batch)}
-                        disabled={batches.filter(b => b.isPopular).length >= 3}
-                      >
-                        Promote
-                      </Button>
+                      <Box>
+                        <Button
+                          variant="outlined"
+                          startIcon={<Instagram />}
+                          onClick={() => startInstagramPromotion(batch, 'batch')}
+                          sx={{ mr: 1 }}
+                        >
+                          Instagram
+                        </Button>
+                        <Button
+                          variant="contained"
+                          endIcon={<ArrowUpward />}
+                          onClick={() => handlePromote(batch)}
+                          disabled={batches.filter(b => b.isPopular).length >= 3}
+                        >
+                          Promote
+                        </Button>
+                      </Box>
                     )}
                   </Box>
                 </CardContent>
@@ -378,6 +651,21 @@ const BatchPromotionPage: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+
+      {/* Create Instagram Promotion Button */}
+      {instagramPromotions.length === 0 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<Instagram />}
+            onClick={() => startInstagramPromotion(null, 'general')}
+            sx={{ px: 4, py: 1.5 }}
+          >
+            Create Instagram Content
+          </Button>
+        </Box>
+      )}
 
       {/* Promotion Dialog */}
       <Dialog
@@ -414,6 +702,275 @@ const BatchPromotionPage: React.FC = () => {
           >
             Promote Now
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Instagram Promotion Dialog */}
+      <Dialog
+        open={instagramDialogOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setInstagramDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Instagram sx={{ mr: 1, color: theme.palette.secondary.main }} />
+            {promotionType === 'batch' ? `Create Instagram Promotion for ${selectedBatch?.name}` : 'Create Instagram Content'}
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              We'll create personalized Instagram content for you to share. {promotionType === 'batch' && 'Your batch details will be automatically included.'}
+            </Typography>
+
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Target Audience</InputLabel>
+              <Select
+                multiple
+                value={targetAudience}
+                onChange={(e) => setTargetAudience(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                input={<OutlinedInput label="Target Audience" />}
+                renderValue={(selected) => selected.join(', ')}
+              >
+                {['Beginners', 'Intermediate', 'Advanced', 'Professionals', 'Students', 'Working Adults', 'Seniors', 'Teens'].map((name) => (
+                  <MenuItem key={name} value={name}>
+                    <Checkbox checked={targetAudience.indexOf(name) > -1} />
+                    <ListItemText primary={name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Typography variant="body2" gutterBottom sx={{ mt: 2 }}>
+              Age Range: {ageRange[0]} - {ageRange[1]}
+            </Typography>
+            <Box sx={{ width: '100%', px: 1, mb: 2 }}>
+              <Slider
+                value={ageRange}
+                onChange={(e, newValue) => setAgeRange(newValue as [number, number])}
+                valueLabelDisplay="auto"
+                min={14}
+                max={70}
+              />
+            </Box>
+
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>Brand Voice</InputLabel>
+              <Select
+                multiple
+                value={brandVoice}
+                onChange={(e) => setBrandVoice(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                input={<OutlinedInput label="Brand Voice" />}
+                renderValue={(selected) => selected.join(', ')}
+              >
+                {['Inspirational', 'Professional', 'Friendly', 'Casual', 'Educational', 'Energetic', 'Calm', 'Motivational'].map((name) => (
+                  <MenuItem key={name} value={name}>
+                    <Checkbox checked={brandVoice.indexOf(name) > -1} />
+                    <ListItemText primary={name} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              multiline
+              rows={3}
+              fullWidth
+              value={contentDescription}
+              onChange={(e) => setContentDescription(e.target.value)}
+              label="Content Description"
+              placeholder="Describe what makes your content special..."
+              sx={{ mb: 2 }}
+            />
+
+            <FormControl component="fieldset" fullWidth>
+              <Typography variant="body2" gutterBottom>Call to Action</Typography>
+              <RadioGroup
+                value={callToAction}
+                onChange={(e) => setCallToAction(e.target.value)}
+              >
+                <FormControlLabel
+                  value="handle"
+                  control={<Radio />}
+                  label="Include my Instagram handle"
+                />
+                <FormControlLabel
+                  value="join"
+                  control={<Radio />}
+                  label="Join my batch/classes"
+                />
+                <FormControlLabel
+                  value="learnmore"
+                  control={<Radio />}
+                  label="Learn more"
+                />
+              </RadioGroup>
+            </FormControl>
+
+            {callToAction === 'handle' && (
+              <TextField
+                fullWidth
+                value={customInstagramHandle}
+                onChange={(e) => setCustomInstagramHandle(e.target.value)}
+                label="Your Instagram Handle"
+                placeholder="@yourhandle"
+                sx={{ mt: 1, mb: 2 }}
+              />
+            )}
+
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {promotionType === 'batch' 
+                ? 'Your first Instagram promotion is free! Additional promotions cost ₹399 for 5 videos or ₹899 for 10 videos.'
+                : 'Creating Instagram content costs ₹399 for 5 videos or ₹899 for 10 videos.'
+              }
+            </Alert>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setInstagramDialogOpen(false)}>Cancel</Button>
+          <Button onClick={createInstagramPromotion} variant="contained" startIcon={<Instagram />}>
+            Create Content
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* View Instagram Promotion Dialog */}
+      <Dialog
+        open={viewPromotionDialogOpen}
+        onClose={() => setViewPromotionDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Instagram sx={{ mr: 1, color: theme.palette.secondary.main }} />
+            Instagram {selectedPromotion?.promotionType === 'batch' ? 'Promotion' : 'Content'}
+            <Chip
+              label={selectedPromotion?.status}
+              color={
+                selectedPromotion?.status === 'processing' ? 'info' :
+                selectedPromotion?.status === 'ready' ? 'primary' :
+                selectedPromotion?.status === 'promoted' ? 'success' : 'default'
+              }
+              sx={{ ml: 2 }}
+              size="small"
+            />
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedPromotion && (
+            <Box>
+              {selectedPromotion.status === 'processing' ? (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <CircularProgress size={60} sx={{ mb: 2 }} />
+                  <Typography variant="h6" gutterBottom>
+                    Creating your Instagram content
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    This usually takes a few minutes. We're generating a personalized video and caption for your promotion.
+                  </Typography>
+                  <LinearProgress variant="determinate" value={processingProgress} sx={{ mb: 2 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {processingProgress}% Complete
+                  </Typography>
+                </Box>
+              ) : (
+                <Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                    <Box sx={{ width: '100%', maxWidth: 400, position: 'relative' }}>
+                      <CardMedia
+                        component="video"
+                        controls
+                        src={selectedPromotion.generatedContent.videoUrl}
+                        sx={{
+                          borderRadius: 2,
+                          overflow: 'hidden',
+                          bgcolor: 'black'
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 16,
+                          right: 16,
+                          bgcolor: 'rgba(0,0,0,0.5)',
+                          color: 'white',
+                          borderRadius: 1,
+                          px: 1,
+                          py: 0.5
+                        }}
+                      >
+                        <Instagram />
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Description sx={{ mr: 1 }} /> Caption
+                    </Typography>
+                    <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50' }}>
+                      <Typography variant="body2">
+                        {selectedPromotion.generatedContent.caption}
+                      </Typography>
+                    </Paper>
+                  </Box>
+
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Tag sx={{ mr: 1 }} /> Hashtags
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {selectedPromotion.generatedContent.hashtags.map((tag, index) => (
+                        <Chip key={index} label={tag} variant="outlined" />
+                      ))}
+                    </Box>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<Download />}
+                      onClick={() => downloadContent(selectedPromotion)}
+                    >
+                      Download Video
+                    </Button>
+                    
+                    {selectedPromotion.promotionType === 'batch' && selectedPromotion.status === 'ready' && (
+                      <Button
+                        variant="contained"
+                        startIcon={<Publish />}
+                        onClick={() => promoteOnInstagram(selectedPromotion)}
+                      >
+                        Promote on Our Instagram
+                      </Button>
+                    )}
+                    
+                    {selectedPromotion.promotionType === 'batch' && selectedPromotion.status === 'promoted' && (
+                      <Chip
+                        icon={<CheckCircle />}
+                        label="Promoted on Our Instagram"
+                        color="success"
+                        variant="outlined"
+                      />
+                    )}
+                  </Box>
+
+                  {selectedPromotion.promotionType === 'batch' && selectedPromotion.status === 'ready' && (
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      Your content is ready! You can download it for your own Instagram or let us promote it on our channel.
+                    </Alert>
+                  )}
+                </Box>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setViewPromotionDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
 

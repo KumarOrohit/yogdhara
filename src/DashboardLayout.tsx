@@ -199,7 +199,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}>
-                Yogdhara
+                Arogya Ananta
               </Typography>
             )}
           </Box>
@@ -327,7 +327,7 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </ListItem>
 
             <Typography variant="caption" color="text.secondary">
-              Yogdhara Platform v2.0
+              Arogya Ananta Platform v2.0
             </Typography>
             <Typography
               variant="caption"

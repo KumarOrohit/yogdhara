@@ -38,10 +38,10 @@ const TermsOfService = () => {
 
           <Box sx={{ mb: 5 }}>
             <Typography variant="h4" fontWeight="700" gutterBottom color="primary">
-              Welcome to Yogdhara
+              Welcome to Arogya Ananta
             </Typography>
             <Typography variant="body1" paragraph>
-              Thank you for choosing Yogdhara, your platform for connecting with certified yoga instructors and deepening your practice. 
+              Thank you for choosing Arogya Ananta, your platform for connecting with certified yoga instructors and deepening your practice. 
               These Terms of Service govern your use of our platform, so please read them carefully.
             </Typography>
           </Box>
@@ -103,7 +103,7 @@ const TermsOfService = () => {
                 </ListItemIcon>
                 <ListItemText 
                   primary="Platform commission"
-                  secondary="Yogdhara deducts a 15% platform fee from each student payment. The remaining 85% is transferred to the instructor."
+                  secondary="Arogya Ananta deducts a 15% platform fee from each student payment. The remaining 85% is transferred to the instructor."
                 />
               </ListItem>
               <ListItem>
@@ -133,7 +133,7 @@ const TermsOfService = () => {
               3. User Conduct
             </Typography>
             <Typography variant="body1" paragraph>
-              As a user of Yogdhara, you agree to:
+              As a user of Arogya Ananta, you agree to:
             </Typography>
             <List>
               <ListItem>
@@ -175,12 +175,12 @@ const TermsOfService = () => {
               4. Intellectual Property
             </Typography>
             <Typography variant="body1" paragraph>
-              All content on the Yogdhara platform, including but not limited to logos, text, graphics, images, 
-              and software, is the property of Yogdhara or its content suppliers and protected by international 
+              All content on the Arogya Ananta platform, including but not limited to logos, text, graphics, images, 
+              and software, is the property of Arogya Ananta or its content suppliers and protected by international 
               copyright laws.
             </Typography>
             <Typography variant="body1" paragraph>
-              Instructors retain ownership of their course materials but grant Yogdhara a license to host and 
+              Instructors retain ownership of their course materials but grant Arogya Ananta a license to host and 
               distribute their content through our platform.
             </Typography>
           </Box>
@@ -203,7 +203,7 @@ const TermsOfService = () => {
               6. Limitation of Liability
             </Typography>
             <Typography variant="body1" paragraph>
-              Yogdhara shall not be liable for any indirect, incidental, special, consequential, or punitive damages, 
+              Arogya Ananta shall not be liable for any indirect, incidental, special, consequential, or punitive damages, 
               including but not limited to loss of profits, data, use, goodwill, or other intangible losses, resulting 
               from your access to or use of or inability to access or use the service.
             </Typography>

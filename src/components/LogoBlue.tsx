@@ -6,7 +6,7 @@ function LogoBlue({ ...props }) {
     <Box
       component="img"
       src={YogdharaLogo}
-      alt="Yogdhara Logo"
+      alt="Arogya Ananta Logo"
       sx={{
         display: { md: "flex" },
         height: 60, // adjust logo size

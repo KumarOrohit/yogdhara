@@ -215,7 +215,7 @@ const TeacherHome = () => {
     doc.rect(0, 0, 210, 30, 'F');
     doc.setFontSize(20);
     doc.setTextColor(255, 255, 255);
-    doc.text('YOGDHARA', 105, 15, { align: 'center' });
+    doc.text('Arogya Ananta', 105, 15, { align: 'center' });
 
     // Add title
     doc.setFontSize(16);
@@ -291,7 +291,7 @@ const TeacherHome = () => {
       doc.setFontSize(8);
       doc.setTextColor(100);
       doc.text(
-        `Page ${i} of ${pageCount} • Yogdhara Teacher Analytics Report`,
+        `Page ${i} of ${pageCount} • Arogya Ananta Teacher Analytics Report`,
         105,
         287,
         { align: 'center' }
@@ -299,7 +299,7 @@ const TeacherHome = () => {
     }
 
     // Save PDF
-    doc.save(`Yogdhara_Teacher_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`Arogya_Ananta_Teacher_Report_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
   const handleExportClick = (event: React.MouseEvent<HTMLElement>) => {

@@ -61,7 +61,7 @@ export default function Footer() {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Spa sx={{ fontSize: 32, color: theme.palette.secondary.main, mr: 1 }} />
               <Typography variant="h4" fontWeight="800" color="white">
-                Yogdhara
+                Arogya Ananta
               </Typography>
             </Box>
             <Typography variant="body2" sx={{ mb: 3, lineHeight: 1.6 }}>
@@ -221,7 +221,7 @@ export default function Footer() {
           gap: 1
         }}>
           <Typography variant="body2" color="grey.400">
-            © {new Date().getFullYear()} Yogdhara. All rights reserved.
+            © {new Date().getFullYear()} Arogya Ananta. All rights reserved.
           </Typography>
           <Box sx={{ display: 'flex', gap: 3 }}>
             <Link href="/privacy-policy" underline="none" color="grey.400" variant="body2">

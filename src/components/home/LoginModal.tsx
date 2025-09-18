@@ -118,7 +118,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
           <Spa sx={{ fontSize: 40, mb: 1 }} />
           
           <Typography variant="h5" fontWeight="700" gutterBottom>
-            Welcome to Yogdhara
+            Welcome to Arogya Ananta
           </Typography>
           
           <Typography variant="body2" sx={{ opacity: 0.9 }}>

@@ -6,7 +6,7 @@ function LogoWhite({ ...props }) {
     <Box
       component="img"
       src={YogdharaLogo}
-      alt="Yogdhara Logo"
+      alt="Arogya Ananta Logo"
       sx={{
         display: { xs: "none", md: "flex" },
         height: 70, // adjust logo size

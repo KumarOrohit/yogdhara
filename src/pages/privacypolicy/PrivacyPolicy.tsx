@@ -40,7 +40,7 @@ const PrivacyPolicy = () => {
               Your Privacy Matters
             </Typography>
             <Typography variant="body1" paragraph>
-              At Yogdhara, we are committed to protecting your privacy and ensuring the security of your personal information. 
+              At Arogya Ananta, we are committed to protecting your privacy and ensuring the security of your personal information. 
               This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.
             </Typography>
           </Box>

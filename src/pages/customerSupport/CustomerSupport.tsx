@@ -148,7 +148,7 @@ const CustomerSupport = () => {
           
           {submitStatus === 'error' && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              There was an error submitting your request. Please try again or email us directly at yogdhara.ananta@gmail.com.
+              There was an error submitting your request. Please try again or email us directly at Arogya Ananta.ananta@gmail.com.
             </Alert>
           )}
 

@@ -50,7 +50,7 @@ const CancellationRefundPolicy = () => {
 
           <Box sx={{ mb: 5, textAlign: 'center' }}>
             <Typography variant="h5" color="text.secondary" fontStyle="italic" paragraph>
-              "At Yogdhara, we strive to create harmonious relationships between teachers and students. 
+              "At Arogya Ananta, we strive to create harmonious relationships between teachers and students. 
               Our refund policy is designed to respect the autonomy of our instructors while maintaining 
               transparency with our community."
             </Typography>
@@ -62,7 +62,7 @@ const CancellationRefundPolicy = () => {
               General Policy
             </Typography>
             <Typography variant="body1" paragraph>
-              Yogdhara operates as a platform that connects yoga instructors with students. We facilitate 
+              Arogya Ananta operates as a platform that connects yoga instructors with students. We facilitate 
               transactions but do not interfere with the teacher-student relationship, including matters 
               related to cancellations and refunds.
             </Typography>
@@ -79,7 +79,7 @@ const CancellationRefundPolicy = () => {
                 Important Note
               </Typography>
               <Typography variant="body1">
-                Yogdhara does not process or issue refunds directly. All refund requests must be directed 
+                Arogya Ananta does not process or issue refunds directly. All refund requests must be directed 
                 to your instructor, who has sole discretion over refund decisions.
               </Typography>
             </Box>
@@ -120,7 +120,7 @@ const CancellationRefundPolicy = () => {
                 </ListItemIcon>
                 <ListItemText 
                   primary="Platform Fees"
-                  secondary="Yogdhara's 15% platform fee covers transaction processing and platform maintenance costs. This fee is non-refundable in all circumstances."
+                  secondary="Arogya Ananta's 15% platform fee covers transaction processing and platform maintenance costs. This fee is non-refundable in all circumstances."
                 />
               </ListItem>
               
@@ -130,7 +130,7 @@ const CancellationRefundPolicy = () => {
                 </ListItemIcon>
                 <ListItemText 
                   primary="Exceptional Circumstances"
-                  secondary="In cases of technical issues preventing class access, please contact Yogdhara support within 24 hours of the scheduled class time."
+                  secondary="In cases of technical issues preventing class access, please contact Arogya Ananta support within 24 hours of the scheduled class time."
                 />
               </ListItem>
             </List>
@@ -187,7 +187,7 @@ const CancellationRefundPolicy = () => {
                 </ListItemIcon>
                 <ListItemText 
                   primary="Promotional Fees"
-                  secondary="Fees paid for promotional services on Yogdhara are non-refundable, as these services are rendered immediately upon purchase."
+                  secondary="Fees paid for promotional services on Arogya Ananta are non-refundable, as these services are rendered immediately upon purchase."
                 />
               </ListItem>
               
@@ -233,7 +233,7 @@ const CancellationRefundPolicy = () => {
                 </ListItemIcon>
                 <ListItemText 
                   primary="What if my instructor is unresponsive to my refund request?"
-                  secondary="Please allow 3-5 business days for instructors to respond. If you haven't received a response after this time, contact Yogdhara support and we'll help facilitate communication."
+                  secondary="Please allow 3-5 business days for instructors to respond. If you haven't received a response after this time, contact Arogya Ananta support and we'll help facilitate communication."
                 />
               </ListItem>
               
