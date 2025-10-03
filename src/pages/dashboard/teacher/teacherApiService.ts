@@ -83,4 +83,18 @@ export default class TeacherApiService {
             return {};
         }
     }
+
+    static creatMarketingContent = async (marketingData: FormData) => {
+        try{
+            const response = await apiClient.post("/teacher/create-marketing-content/", marketingData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+            return {...response.data, status: response.status}
+        } catch (error) {
+            console.log("creatMarketingContent error", error);
+            return {};
+        }
+    }
 }

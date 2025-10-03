@@ -125,7 +125,6 @@ interface InstagramPromotion {
   id: string;
   batchId?: string;
   contentDescription: string;
-  targetAudience: string[];
   ageRange: [number, number];
   brandVoice: string[];
   callToAction: string;
@@ -158,7 +157,6 @@ const BatchPromotionPage: React.FC = () => {
 
   // Instagram promotion form state
   const [contentDescription, setContentDescription] = useState('');
-  const [targetAudience, setTargetAudience] = useState<string[]>([]);
   const [ageRange, setAgeRange] = useState<[number, number]>([18, 35]);
   const [brandVoice, setBrandVoice] = useState<string[]>([]);
   const [callToAction, setCallToAction] = useState('handle');
@@ -230,14 +228,13 @@ const BatchPromotionPage: React.FC = () => {
     
     // Reset form
     setContentDescription('');
-    setTargetAudience([]);
     setAgeRange([18, 35]);
     setBrandVoice([]);
     setCallToAction('handle');
     setCustomInstagramHandle('');
   };
 
-  const createInstagramPromotion = () => {
+  const createInstagramPromotion = async () => {
     setProcessingProgress(0);
     
     // Simulate processing
@@ -251,13 +248,20 @@ const BatchPromotionPage: React.FC = () => {
       });
     }, 300);
 
+    const formData = new FormData();
+    formData.append('content_description', contentDescription);
+    formData.append('min_age', ageRange[0].toString());
+    formData.append('max_age', ageRange[1].toString());
+    formData.append('brand_voice', brandVoice.join(","));
+
     // In a real app, this would be an API call
+    // await TeacherApiService.creatMarketingContent(formData);
     setTimeout(() => {
       const newPromotion: InstagramPromotion = {
         id: `ig-${Date.now()}`,
         batchId: promotionType === 'batch' ? selectedBatch!.id : undefined,
         contentDescription,
-        targetAudience,
+   
         ageRange,
         brandVoice,
         callToAction,
@@ -268,7 +272,7 @@ const BatchPromotionPage: React.FC = () => {
         generatedContent: {
           videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', // Sample video
           caption: promotionType === 'batch' 
-            ? `Join my ${selectedBatch!.name} batch! Perfect for ${targetAudience.join(', ')} aged ${ageRange[0]}-${ageRange[1]}. ${contentDescription}`
+            ? `Join my ${selectedBatch!.name} batch! Perfect for aged ${ageRange[0]}-${ageRange[1]}. ${contentDescription}`
             : `${contentDescription}`,
           hashtags: promotionType === 'batch' 
             ? ['#Yoga', '#Fitness', '#Wellness', '#OnlineClasses', getFirstCategory(selectedBatch?.learning || []).replace(/\s+/g, '')]
@@ -726,23 +730,7 @@ const BatchPromotionPage: React.FC = () => {
               We'll create personalized Instagram content for you to share. {promotionType === 'batch' && 'Your batch details will be automatically included.'}
             </Typography>
 
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Target Audience</InputLabel>
-              <Select
-                multiple
-                value={targetAudience}
-                onChange={(e) => setTargetAudience(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
-                input={<OutlinedInput label="Target Audience" />}
-                renderValue={(selected) => selected.join(', ')}
-              >
-                {['Beginners', 'Intermediate', 'Advanced', 'Professionals', 'Students', 'Working Adults', 'Seniors', 'Teens'].map((name) => (
-                  <MenuItem key={name} value={name}>
-                    <Checkbox checked={targetAudience.indexOf(name) > -1} />
-                    <ListItemText primary={name} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            
 
             <Typography variant="body2" gutterBottom sx={{ mt: 2 }}>
               Age Range: {ageRange[0]} - {ageRange[1]}
